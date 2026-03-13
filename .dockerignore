@@ -1,0 +1,30 @@
+# Git and env (do not copy secrets into image)
+.git
+.gitignore
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__
+*.py[cod]
+*.pyo
+.pytest_cache
+.venv
+venv
+env
+*.egg-info
+.eggs
+
+# IDE and OS
+.idea
+.vscode
+*.swp
+.DS_Store
+Thumbs.db
+
+# Runtime uploads (keep image clean; use volume for persistence)
+backend/uploads/
+
+# Optional: uncomment to keep image smaller (sample PDFs generated at build)
+# backend/data/sample_inquiries/*.pdf

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Specs to Quote</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #fff;
+      --surface-tint: #f0f6ff;
+      --primary: #0969da;
+      --primary-hover: #0550ae;
+      --text: #1f2328;
+      --text-muted: #656d76;
+      --border: #d8dee4;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --space: 1.25rem;
+      --section-gap: 2rem;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: var(--space) 1.5rem; }
+    .header h1 { margin: 0; font-size: clamp(1.1rem, 2.5vw, 1.35rem); font-weight: 600; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .page-section { margin-bottom: var(--section-gap); }
+    .howto-panel { background: var(--surface-tint); }
+    .howto-toggle { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; cursor: pointer; user-select: none; margin: 0; margin-bottom: 0; padding: 0; border: none; background: none; width: 100%; font: inherit; color: inherit; text-align: left; }
+    .howto-toggle:hover { opacity: 0.9; }
+    .howto-toggle .chevron { font-size: 0.85rem; color: var(--text-muted); transition: transform 0.2s; }
+    .howto-panel.collapsed .howto-toggle .chevron { transform: rotate(-90deg); }
+    .howto-body { margin-top: 0.75rem; overflow: hidden; transition: opacity 0.2s; }
+    .howto-panel.collapsed .howto-body { display: none; }
+    .howto-intro { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+    .howto-list { margin: 0; padding-left: 1.5rem; }
+    .howto-list li { margin-bottom: 0.5rem; }
+    .container > .intro-p { margin: 0 0 var(--space); color: var(--text-muted); font-size: 0.95rem; }
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius); padding: 2.5rem var(--space); text-align: center; background: var(--surface);
+      margin: var(--space) 0; cursor: pointer; box-shadow: var(--shadow); transition: border-color 0.15s, background 0.15s;
+    }
+    .upload-zone.dragover { border-color: var(--primary); background: #eef5ff; }
+    .upload-zone input { display: none; }
+    .upload-zone p { margin: 0.25rem 0; color: var(--text); }
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space); margin: var(--space) 0; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .panel { background: var(--surface); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .panel h2 { margin-top: 0; margin-bottom: 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .panel pre, .panel .text { white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; max-height: 400px; overflow: auto; margin: 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: var(--space) 0; }
+    .btn { padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; font-family: inherit; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: #c2c8ce; }
+    .status { color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0; }
+    .packet-section { margin: 1rem 0; }
+    .packet-section:first-child { margin-top: 0; }
+    .packet-section h3 { font-size: 0.95rem; font-weight: 600; color: var(--text); margin: 0 0 0.35rem; }
+    .packet-section ul { margin: 0.25rem 0; padding-left: 1.25rem; }
+    .job-row { font-size: 0.85rem; padding: 0.25rem 0; }
+    #inquiryId { font-weight: 600; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space); margin: var(--space) 0; }
+    .metric { background: var(--surface); padding: 1.25rem; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .metric .value { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+    .metric .label { font-size: 0.85rem; color: var(--text-muted); }
+    .outcomes { margin: var(--space) 0; }
+    .outcomes h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .outcomes ul { list-style: none; padding: 0; }
+    .outcomes li { padding: 0.25rem 0; }
+    .dashboard-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .dashboard-table th, .dashboard-table td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .dashboard-table th { background: var(--bg); font-weight: 600; font-size: 0.9rem; }
+    .dashboard-table tr:last-child td { border-bottom: none; }
+    .outcome-approved { color: #0a6b0a; font-weight: 600; }
+    .outcome-rejected { color: #b91c1c; font-weight: 600; }
+    .outcome-escalated { color: #b45309; font-weight: 600; }
+    .outcome-corrected { color: #0969da; font-weight: 600; }
+    .corrections-row { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.25rem 0 0.5rem; flex-wrap: wrap; }
+    .corrections-input { flex: 1; min-width: 200px; max-width: 480px; padding: 0.5rem; font-size: 0.9rem; font-family: inherit; border: 1px solid var(--border); border-radius: 8px; resize: vertical; }
+    .corrections-row .btn { flex-shrink: 0; }
+    .correction-notes { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; padding-left: 0.75rem; }
+    .correction-notes ul { margin: 0.25rem 0 0; padding-left: 1rem; }
+    .feedback-history-body .history-entry { margin-bottom: 0.5rem; }
+    .feedback-history-body .history-corrections { margin: 0.2rem 0 0; padding-left: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+    .feedback-history-toggle { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.85rem; padding: 0.25rem 0; text-align: left; }
+    .feedback-history-toggle:hover { text-decoration: underline; }
+    .feedback-history-body { margin-top: 0.25rem; padding-left: 1rem; border-left: 2px solid var(--border); font-size: 0.85rem; color: var(--text-muted); }
+    .feedback-by-inquiry { margin: 0.5rem 0; }
+    .feedback-by-inquiry .inquiry-row { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+    .feedback-by-inquiry .inquiry-row:last-child { border-bottom: none; }
+    .pilot-metrics-section h2 { font-size: 1rem; }
+    .toast { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); padding: 0.5rem 1rem; border-radius: 8px; background: var(--text); color: var(--surface); font-size: 0.9rem; z-index: 1000; box-shadow: var(--shadow); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .toast.visible { opacity: 1; }
+    .btn-outcome.selected[data-outcome="approved"] { background: #0a6b0a; color: #fff; border-color: #0a6b0a; }
+    .btn-outcome.selected[data-outcome="rejected"] { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+    .btn-outcome.selected[data-outcome="escalated"] { background: #b45309; color: #fff; border-color: #b45309; }
+    .inquiry-id-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .inquiry-id-row .status { margin: 0; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1001; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.visible { display: flex; }
+    .modal { background: var(--surface); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-width: 640px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+    .modal-header h2 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+    .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 0 0.25rem; }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 1.25rem; overflow: auto; }
+    .modal-body .text { white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; margin: 0; max-height: 60vh; }
+    .layout-one { margin: var(--space) 0; }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast" aria-live="polite"></div>
+  <header class="header">
+    <h1>Specs to Quote</h1>
+  </header>
+  <div class="container">
+    <section class="panel howto-panel page-section" id="howtoSection">
+      <button type="button" class="howto-toggle" id="howtoToggle" aria-expanded="true" aria-controls="howtoBody">
+        <span>How to use</span>
+        <span class="chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="howto-body" id="howtoBody">
+        <p class="howto-intro">Follow these steps to run an inquiry from upload to export.</p>
+        <ol class="howto-list">
+          <li>Upload an inquiry (PDF, Word, or Excel) below.</li>
+          <li>Click <strong>Process inquiry → Generate packet</strong> to get the six-section Quote Review Packet.</li>
+          <li>Review the packet below; use <strong>Raw text</strong> to view parsed inquiry if needed. Use <strong>View packet (HTML)</strong> or <strong>Download packet (PDF)</strong> as needed.</li>
+          <li>Use <strong>Generate clarification email</strong> or <strong>Export approved packet</strong> as needed.</li>
+          <li>Record outcome (Approved / Rejected / Escalate to technical lead) for pilot metrics (see bottom of page).</li>
+        </ol>
+      </div>
+    </section>
+
+    <p class="intro-p">Upload an inquiry document (PDF, Word, Excel, or image). Then run the pipeline to get the Quote Review Packet.</p>
+
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf,.docx,.xlsx,.txt,.eml,.jpg,.jpeg,.png" />
+      <p>Drag and drop a file here, or click to select</p>
+      <p class="status" id="uploadStatus"></p>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnProcess" disabled>Process inquiry → Generate packet</button>
+      <a class="btn btn-secondary" id="linkPacketHtml" style="display:none" href="#" target="_blank">View packet (HTML)</a>
+      <a class="btn btn-secondary" id="linkPacketPdf" style="display:none" href="#" target="_blank">Download packet (PDF)</a>
+      <button class="btn btn-secondary" id="btnClarify" style="display:none">Generate clarification email</button>
+      <button class="btn btn-secondary" id="btnExport" style="display:none">Export approved packet</button>
+    </div>
+    <div class="panel" id="feedbackPanel" style="display:none">
+      <h2>Record outcome (pilot metrics)</h2>
+      <p>Outcome: <button class="btn btn-secondary btn-outcome" data-outcome="approved">Approved</button>
+         <button class="btn btn-secondary btn-outcome" data-outcome="rejected">Rejected</button>
+         <button class="btn btn-secondary btn-outcome" data-outcome="escalated">Escalate to technical lead</button></p>
+      <p><label for="correctionsInput">Corrections (optional)</label> — one per line, e.g. "Fixed coating family" or "Updated quantity to 24"</p>
+      <div class="corrections-row">
+        <textarea id="correctionsInput" class="corrections-input" rows="2" placeholder="Add correction notes here…"></textarea>
+        <button type="button" class="btn btn-secondary" id="btnSendCorrection">Send correction</button>
+      </div>
+      <p class="status" id="feedbackStatus"></p>
+    </div>
+
+    <div class="inquiry-id-row">
+      <span class="status" id="inquiryId"></span>
+      <button type="button" class="btn btn-secondary" id="btnRawText" style="display:none">Raw text</button>
+    </div>
+
+    <div class="layout-one">
+      <div class="panel">
+        <h2>Quote Review Packet</h2>
+        <div id="packetContent">After processing, the six-section packet appears here.</div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="rawTextModal" aria-hidden="true">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Raw / Parsed inquiry text</h2>
+          <button type="button" class="modal-close" id="rawTextModalClose" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <pre id="rawTextModalContent" class="text"></pre>
+        </div>
+      </div>
+    </div>
+    <div id="parsedText" style="display:none" aria-hidden="true"></div>
+
+    <div class="panel" id="clarifyPanel" style="display:none">
+      <h2>Draft clarification email</h2>
+      <p><strong>Subject:</strong> <span id="clarifySubject"></span></p>
+      <pre id="clarifyBody"></pre>
+    </div>
+
+    <section class="page-section pilot-metrics-section" id="pilot-metrics">
+      <div class="panel">
+        <h2>Pilot metrics</h2>
+        <div id="dashboardContent">Loading…</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API = window.location.origin;
+    let currentInquiryId = null;
+
+    document.getElementById('howtoToggle').addEventListener('click', function() {
+      const section = document.getElementById('howtoSection');
+      const isCollapsed = section.classList.toggle('collapsed');
+      this.setAttribute('aria-expanded', !isCollapsed);
+    });
+
+    function showToast(message, durationMs) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('visible');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(function() {
+        toast.classList.remove('visible');
+      }, durationMs || 2500);
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const inquiryIdEl = document.getElementById('inquiryId');
+    const btnProcess = document.getElementById('btnProcess');
+    const linkPacketHtml = document.getElementById('linkPacketHtml');
+    const linkPacketPdf = document.getElementById('linkPacketPdf');
+    const btnClarify = document.getElementById('btnClarify');
+    const btnExport = document.getElementById('btnExport');
+    const parsedText = document.getElementById('parsedText');
+    const packetContent = document.getElementById('packetContent');
+    const clarifyPanel = document.getElementById('clarifyPanel');
+    const clarifySubject = document.getElementById('clarifySubject');
+    const clarifyBody = document.getElementById('clarifyBody');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer?.files?.[0];
+      if (file) doUpload(file);
+    });
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) doUpload(file);
+    });
+
+    async function doUpload(file) {
+      uploadStatus.textContent = 'Uploading…';
+      const form = new FormData();
+      form.append('file', file);
+      try {
+        const r = await fetch(API + '/api/upload', { method: 'POST', body: form });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.detail || 'Upload failed');
+        currentInquiryId = data.inquiry_id;
+        inquiryIdEl.textContent = 'Inquiry ID: ' + currentInquiryId;
+        document.getElementById('btnRawText').style.display = 'none';
+        uploadStatus.textContent = 'Uploaded: ' + (data.filename || file.name);
+        btnProcess.disabled = false;
+        linkPacketHtml.style.display = 'none';
+        linkPacketPdf.style.display = 'none';
+        btnClarify.style.display = 'none';
+        btnExport.style.display = 'none';
+        packetContent.innerHTML = 'Click "Process inquiry" to generate the packet.';
+        clarifyPanel.style.display = 'none';
+        document.getElementById('feedbackPanel').style.display = 'none';
+        document.getElementById('feedbackStatus').textContent = '';
+        document.querySelectorAll('.btn-outcome').forEach(b => b.classList.remove('selected'));
+        var corrEl = document.getElementById('correctionsInput');
+        if (corrEl) corrEl.value = '';
+      } catch (e) {
+        uploadStatus.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    btnProcess.addEventListener('click', async () => {
+      if (!currentInquiryId) return;
+      btnProcess.disabled = true;
+      packetContent.innerHTML = 'Processing…';
+      try {
+        const r = await fetch(API + '/api/process/' + currentInquiryId, { method: 'POST' });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.detail || 'Process failed');
+        const parsed = await fetch(API + '/api/parsed/' + currentInquiryId).then(r => r.json());
+        parsedText.textContent = parsed.combined_text || '(no text extracted)';
+        document.getElementById('btnRawText').style.display = 'inline-block';
+        renderPacket(data.packet);
+        linkPacketHtml.href = API + '/api/packet/' + currentInquiryId + '/html';
+        linkPacketHtml.style.display = 'inline-block';
+        linkPacketPdf.href = API + '/api/packet/' + currentInquiryId + '/pdf';
+        linkPacketPdf.style.display = 'inline-block';
+        btnClarify.style.display = 'inline-block';
+        btnExport.style.display = 'inline-block';
+        showPilotControls();
+      } catch (e) {
+        packetContent.innerHTML = 'Error: ' + e.message;
+      }
+      btnProcess.disabled = false;
+    });
+
+    function renderPacket(packet) {
+      let html = '';
+      const summary = packet['1_inquiry_summary'] || {};
+      html += '<div class="packet-section"><h3>1. Inquiry summary</h3><p>' + Object.entries(summary).map(([k,v]) => k + ': ' + v).join('<br/>') + '</p></div>';
+      const facts = packet['2_extracted_technical_facts'] || {};
+      html += '<div class="packet-section"><h3>2. Extracted technical facts</h3><p>' + Object.entries(facts).map(([k,v]) => k + ': ' + (Array.isArray(v) ? v.join(', ') : v)).join('<br/>') + '</p></div>';
+      const jobs = packet['3_similar_historical_jobs'] || [];
+      html += '<div class="packet-section"><h3>3. Similar historical jobs (with job IDs)</h3>';
+      jobs.forEach(j => { html += '<div class="job-row">Job ' + (j.job_id || '') + ': ' + (j.part_description || '') + ' — ' + (j.coating_family || '') + '</div>'; });
+      html += '</div>';
+      const paths = packet['4_recommended_coating_paths'] || [];
+      html += '<div class="packet-section"><h3>4. Recommended coating paths</h3>';
+      paths.forEach(p => { html += '<p><strong>' + (p.coating_family || '') + '</strong>: ' + (p.why_fit || '') + ' Review: ' + (p.review_by || '') + '</p>'; });
+      html += '</div>';
+      const flags = packet['5_risk_missing_info_flags'] || [];
+      html += '<div class="packet-section"><h3>5. Risk / missing-info flags</h3><ul>';
+      flags.forEach(f => { html += '<li>' + f + '</li>'; });
+      html += '</ul></div>';
+      const checklist = packet['6_quote_prep_checklist'] || [];
+      html += '<div class="packet-section"><h3>6. Quote-prep checklist</h3><ul>';
+      checklist.forEach(c => { html += '<li>' + c + '</li>'; });
+      html += '</ul></div>';
+      packetContent.innerHTML = html;
+    }
+
+    btnClarify.addEventListener('click', async () => {
+      if (!currentInquiryId) return;
+      try {
+        const r = await fetch(API + '/api/clarify-email/' + currentInquiryId, { method: 'POST' });
+        const data = await r.json();
+        clarifySubject.textContent = data.subject || '';
+        clarifyBody.textContent = data.body || '';
+        clarifyPanel.style.display = 'block';
+        showToast('Draft ready below');
+        clarifyPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (e) {
+        clarifyBody.textContent = 'Error: ' + e.message;
+        clarifyPanel.style.display = 'block';
+      }
+    });
+
+    btnExport.addEventListener('click', async () => {
+      if (!currentInquiryId) return;
+      try {
+        const r = await fetch(API + '/api/export-approved/' + currentInquiryId, { method: 'POST' });
+        const blob = await r.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'approved_packet_' + currentInquiryId + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      } catch (e) {
+        alert('Export failed: ' + e.message);
+      }
+    });
+
+    document.getElementById('btnSendCorrection').addEventListener('click', async function() {
+      if (!currentInquiryId) return;
+      var corrEl = document.getElementById('correctionsInput');
+      var lines = (corrEl && corrEl.value) ? corrEl.value.split('\n').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+      if (lines.length === 0) {
+        showToast('Add correction text first');
+        return;
+      }
+      var corrections = lines.map(function(note) { return { field: 'note', old_value: '', new_value: note }; });
+      var outcome = 'corrected';
+      try {
+        var r = await fetch(API + '/api/record-feedback/' + currentInquiryId, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ corrections: corrections, outcome: outcome, notes: '' })
+        });
+        var data = await r.json();
+        if (corrEl) corrEl.value = '';
+        showToast('Correction(s) sent');
+        loadDashboard();
+      } catch (e) {
+        showToast('Error: ' + e.message);
+      }
+    });
+
+    document.querySelectorAll('.btn-outcome').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!currentInquiryId) return;
+        const outcome = btn.getAttribute('data-outcome');
+        const corrEl = document.getElementById('correctionsInput');
+        const lines = (corrEl && corrEl.value) ? corrEl.value.split('\n').map(function(s) { return s.trim(); }).filter(Boolean) : [];
+        const corrections = lines.map(function(note) { return { field: 'note', old_value: '', new_value: note }; });
+        try {
+          const r = await fetch(API + '/api/record-feedback/' + currentInquiryId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ corrections: corrections, outcome: outcome, notes: '' })
+          });
+          const data = await r.json();
+          const statusOutcome = (data.status || outcome).toUpperCase();
+          document.getElementById('feedbackStatus').textContent = 'Recorded: ' + statusOutcome;
+          document.querySelectorAll('.btn-outcome').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          if (corrEl) corrEl.value = '';
+          showToast('Outcome recorded');
+          document.getElementById('feedbackPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          loadDashboard();
+        } catch (e) {
+          document.getElementById('feedbackStatus').textContent = 'Error: ' + e.message;
+        }
+      });
+    });
+
+    function showPilotControls() {
+      document.getElementById('feedbackPanel').style.display = 'block';
+    }
+
+    function loadDashboard() {
+      var el = document.getElementById('dashboardContent');
+      var url = (window.location.origin && window.location.origin !== 'file://' && window.location.origin !== 'null') ? (API + '/api/dashboard') : ('/api/dashboard');
+      fetch(url).then(function(r) {
+        if (!r.ok) throw new Error('Dashboard returned ' + r.status);
+        return r.json();
+      }).then(function(data) {
+        try {
+          var m = data.metrics || {};
+          var recent = data.recent_feedback || [];
+          var html = '<div class="metrics">';
+          html += '<div class="metric"><div class="value">' + (m.inquiries_processed || 0) + '</div><div class="label">Inquiries processed</div></div>';
+          html += '<div class="metric"><div class="value">' + (m.inquiries_with_feedback || 0) + '</div><div class="label">With feedback</div></div>';
+          html += '<div class="metric"><div class="value">' + (m.total_corrections || 0) + '</div><div class="label">Total corrections</div></div>';
+          html += '</div>';
+          html += '<div class="outcomes"><h3>Outcomes</h3><ul>';
+          for (var outcome in (m.outcomes || {})) {
+            html += '<li>' + (outcome ? String(outcome).toUpperCase() : outcome) + ': ' + (m.outcomes[outcome]) + '</li>';
+          }
+          html += '</ul></div>';
+          html += '<h3>Feedback by inquiry</h3>';
+          if (recent.length) {
+            var byId = {};
+            recent.forEach(function(e) {
+              var id = (e.inquiry_id != null ? String(e.inquiry_id) : '');
+              if (!byId[id]) byId[id] = [];
+              byId[id].push(e);
+            });
+            html += '<div class="feedback-by-inquiry">';
+            for (var inquiryId in byId) {
+              var entries = byId[inquiryId];
+              var current = entries[0];
+              var rawOut = (current.outcome || '').toString();
+              var out = rawOut.toUpperCase();
+              var outClass = rawOut ? 'outcome-' + rawOut.toLowerCase() : '';
+              var corrCount = current.corrections && current.corrections.length ? current.corrections.length : 0;
+              var safeId = String(inquiryId).replace(/[^a-zA-Z0-9_-]/g, '_');
+              html += '<div class="inquiry-row"><strong>Inquiry ID ' + escapeHtml(inquiryId) + '</strong> — <span class="' + outClass + '">' + escapeHtml(out) + '</span>';
+              if (corrCount) html += ' (' + corrCount + ' correction' + (corrCount !== 1 ? 's' : '') + ')';
+              if (current.corrections && current.corrections.length) {
+                html += '<div class="correction-notes"><ul>';
+                current.corrections.forEach(function(c) {
+                  var note = (c && (c.new_value != null ? c.new_value : c)) ? String(c.new_value || c) : '';
+                  if (note) html += '<li>' + escapeHtml(note) + '</li>';
+                });
+                html += '</ul></div>';
+              }
+              if (entries.length > 1) {
+                html += ' <button type="button" class="feedback-history-toggle" data-inquiry="' + safeId + '" aria-expanded="false">▼ Older changes (' + (entries.length - 1) + ')</button>';
+                html += '<div class="feedback-history-body" id="history-' + safeId + '" style="display:none">';
+                for (var i = 1; i < entries.length; i++) {
+                  var prev = entries[i];
+                  var pOut = (prev.outcome || '').toString().toUpperCase();
+                  html += '<div class="history-entry"><span class="' + (prev.outcome ? 'outcome-' + (prev.outcome || '').toString().toLowerCase() : '') + '">' + escapeHtml(pOut) + '</span>';
+                  if (prev.corrections && prev.corrections.length) {
+                    html += '<ul class="history-corrections">';
+                    prev.corrections.forEach(function(c) {
+                      var note = (c && (c.new_value != null ? c.new_value : c)) ? String(c.new_value || c) : '';
+                      if (note) html += '<li>' + escapeHtml(note) + '</li>';
+                    });
+                    html += '</ul>';
+                  }
+                  html += '</div>';
+                }
+                html += '</div>';
+              }
+              html += '</div>';
+            }
+            html += '</div>';
+          } else {
+            html += '<p>No feedback recorded yet.</p>';
+          }
+          el.innerHTML = html;
+          document.querySelectorAll('.feedback-history-toggle').forEach(function(btn) {
+            var bid = btn.getAttribute('data-inquiry');
+            btn.addEventListener('click', function() {
+              var body = document.getElementById('history-' + bid);
+              if (!body) return;
+              var open = body.style.display !== 'none';
+              body.style.display = open ? 'none' : 'block';
+              btn.setAttribute('aria-expanded', !open);
+              btn.textContent = (open ? '▼' : '▲') + ' Older changes (' + (body.querySelectorAll('div').length) + ')';
+            });
+          });
+        } catch (err) {
+          el.innerHTML = 'Error showing metrics: ' + (err && err.message ? err.message : String(err));
+        }
+      }).catch(function(e) {
+        el.innerHTML = 'Error loading metrics: ' + (e && e.message ? e.message : String(e)) + '. Open the app at <a href="/">http://' + (window.location.host || 'localhost:8000') + '</a> to use the API.';
+      });
+    }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      var str = String(s);
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    const rawTextModal = document.getElementById('rawTextModal');
+    const rawTextModalContent = document.getElementById('rawTextModalContent');
+    document.getElementById('btnRawText').addEventListener('click', function() {
+      rawTextModalContent.textContent = parsedText.textContent || 'No parsed text available.';
+      rawTextModal.classList.add('visible');
+      rawTextModal.setAttribute('aria-hidden', 'false');
+    });
+    document.getElementById('rawTextModalClose').addEventListener('click', function() {
+      rawTextModal.classList.remove('visible');
+      rawTextModal.setAttribute('aria-hidden', 'true');
+    });
+    rawTextModal.addEventListener('click', function(e) {
+      if (e.target === rawTextModal) {
+        rawTextModal.classList.remove('visible');
+        rawTextModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+</body>
+</html>

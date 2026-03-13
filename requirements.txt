@@ -1,0 +1,26 @@
+# Spec-to-Quote Copilot
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+pydantic>=2.0.0
+
+# Document parsing
+pypdf2>=3.0.0
+pdf2image>=1.16.0
+pillow>=10.0.0
+python-docx>=1.0.0
+openpyxl>=3.1.0
+
+# LLM (OpenAI GPT primary; Anthropic optional)
+openai>=1.0.0
+anthropic>=0.18.0
+httpx>=0.25.0
+
+# Embeddings fallback
+sentence-transformers>=2.2.0
+
+# PDF generation for packet export
+reportlab>=4.0.0
+
+# Optional: WeasyPrint for HTML-to-PDF (can add later)
+# weasyprint>=60.0
